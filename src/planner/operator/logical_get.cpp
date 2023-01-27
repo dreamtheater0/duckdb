@@ -7,6 +7,7 @@
 #include "duckdb/function/function_serialization.hpp"
 #include "duckdb/function/table/table_scan.hpp"
 #include "duckdb/storage/data_table.hpp"
+#include <string>
 
 namespace duckdb {
 
@@ -201,4 +202,35 @@ vector<idx_t> LogicalGet::GetTableIndex() const {
 	return vector<idx_t> {table_index};
 }
 
+void LogicalGet::GetPlanProperties(vector<PlanProperty> &props) const {
+	props.emplace_back("TableIdx", to_string(table_index));
+
+	for (auto &kv : table_filters.filters) {
+		auto &column_index = kv.first;
+		auto &filter = kv.second;
+		if (column_index < names.size()) {
+			props.emplace_back("Filter", filter->ToString(names[column_index]));
+		}
+	}
+
+	for (auto &table : input_table_names) {
+		props.emplace_back("Table", table);
+	}
+
+	unordered_set<column_t> out_columns(column_ids.begin(), column_ids.end());
+	idx_t col_idx = 0;
+	for (auto &name : names) {
+		if (out_columns.find(col_idx) != out_columns.end()) {
+			props.emplace_back("OutCol[" + to_string(col_idx) + "]",
+			                   name + " " + this->returned_types[col_idx].ToString());
+		}
+		col_idx++;
+	}
+
+	if (function.to_string) {
+		props.emplace_back("Func", function.to_string(bind_data.get()));
+	}
+
+	LogicalOperator::GetPlanProperties(props);
+}
 } // namespace duckdb

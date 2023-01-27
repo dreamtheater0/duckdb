@@ -45,6 +45,7 @@ public:
 public:
 	string GetName() const override;
 	string ParamsToString() const override;
+	void GetPlanProperties(vector<PlanProperty> &props) const override;
 
 	bool Equals(const PhysicalOperator &other) const override;
 

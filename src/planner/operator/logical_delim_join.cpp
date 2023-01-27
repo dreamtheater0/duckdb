@@ -24,4 +24,14 @@ unique_ptr<LogicalOperator> LogicalDelimJoin::Deserialize(LogicalDeserialization
 	return std::move(result);
 }
 
+void LogicalDelimJoin::GetPlanProperties(vector<PlanProperty> &props) const {
+	idx_t col_idx = 0;
+	props.reserve(duplicate_eliminated_columns.size());
+	for (auto &expr : duplicate_eliminated_columns) {
+		props.emplace_back("DElimCol[" + to_string(col_idx) + "]", expr->ToString());
+	}
+
+	LogicalComparisonJoin::GetPlanProperties(props);
+}
+
 } // namespace duckdb

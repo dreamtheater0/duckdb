@@ -4,6 +4,7 @@
 #include "duckdb/common/vector_operations/vector_operations.hpp"
 #include "duckdb/execution/aggregate_hashtable.hpp"
 #include "duckdb/execution/partitionable_hashtable.hpp"
+#include "duckdb/execution/physical_operator.hpp"
 #include "duckdb/main/client_context.hpp"
 #include "duckdb/parallel/pipeline.hpp"
 #include "duckdb/parallel/task_scheduler.hpp"
@@ -918,6 +919,26 @@ string PhysicalHashAggregate::ParamsToString() const {
 		}
 	}
 	return result;
+}
+
+void PhysicalHashAggregate::GetPlanProperties(vector<PlanProperty> &props) const {
+	idx_t idx = 0;
+	for (auto &group : grouped_aggregate_data.groups) {
+		props.emplace_back("GROUP[" + to_string(idx) + "]", group->GetName());
+		idx++;
+	}
+	idx = 0;
+	for (auto &aggr : grouped_aggregate_data.aggregates) {
+		string aggr_str = aggr->GetName();
+
+		auto &aggregate = (BoundAggregateExpression &)*aggr;
+		if (aggregate.filter) {
+			aggr_str += aggregate.filter->GetName();
+		}
+		props.emplace_back("AGGR[" + to_string(idx) + "]", aggr_str);
+	}
+
+	PhysicalOperator::GetPlanProperties(props);
 }
 
 } // namespace duckdb

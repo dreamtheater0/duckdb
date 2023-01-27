@@ -2,6 +2,7 @@
 
 #include "duckdb/catalog/catalog_entry/table_catalog_entry.hpp"
 #include "duckdb/common/string_util.hpp"
+#include "duckdb/execution/physical_operator.hpp"
 #include "duckdb/planner/expression/bound_conjunction_expression.hpp"
 #include "duckdb/transaction/transaction.hpp"
 
@@ -155,6 +156,31 @@ bool PhysicalTableScan::Equals(const PhysicalOperator &other_p) const {
 		return false;
 	}
 	return true;
+}
+
+void PhysicalTableScan::GetPlanProperties(vector<PlanProperty> &props) const {
+	if (function.to_string) {
+		props.emplace_back("Func", function.to_string(bind_data.get()));
+	}
+	if (function.projection_pushdown) {
+		for (auto &projection_id : projection_ids) {
+			const auto &column_id = column_ids[projection_id];
+			if (column_id < names.size()) {
+				props.emplace_back("Col[" + to_string(column_id) + "]", names[column_id]);
+			}
+		}
+	}
+	if (function.filter_pushdown && table_filters) {
+		for (auto &f : table_filters->filters) {
+			auto &column_index = f.first;
+			auto &filter = f.second;
+			if (column_index < names.size()) {
+				props.emplace_back("Filter[" + to_string(column_index) + "]",
+				                   filter->ToString(names[column_ids[column_index]]));
+			}
+		}
+	}
+	PhysicalOperator::GetPlanProperties(props);
 }
 
 } // namespace duckdb

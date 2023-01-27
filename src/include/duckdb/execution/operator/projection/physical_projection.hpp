@@ -30,6 +30,7 @@ public:
 	}
 
 	string ParamsToString() const override;
+	void GetPlanProperties(vector<PlanProperty> &props) const override;
 };
 
 } // namespace duckdb

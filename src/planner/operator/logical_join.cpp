@@ -3,6 +3,8 @@
 #include "duckdb/planner/expression/bound_columnref_expression.hpp"
 #include "duckdb/planner/expression_iterator.hpp"
 #include "duckdb/common/field_writer.hpp"
+#include "duckdb/planner/logical_operator.hpp"
+#include "duckdb/planner/logical_tokens.hpp"
 
 namespace duckdb {
 
@@ -73,6 +75,16 @@ void LogicalJoin::Deserialize(LogicalJoin &join, LogicalDeserializationState &st
 	join.left_projection_map = reader.ReadRequiredList<idx_t>();
 	join.right_projection_map = reader.ReadRequiredList<idx_t>();
 	//	join.join_stats = reader.ReadRequiredSerializableList<BaseStatistics>(reader.GetSource());
+}
+
+void LogicalJoin::GetPlanProperties(vector<PlanProperty> &props) const {
+	props.emplace_back("JoinType", JoinTypeToString(join_type));
+
+	if (join_type == JoinType::MARK) {
+		props.emplace_back("MarkIndex", to_string(mark_index));
+	}
+
+	LogicalOperator::GetPlanProperties(props);
 }
 
 } // namespace duckdb

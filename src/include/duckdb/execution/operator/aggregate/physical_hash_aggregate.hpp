@@ -125,6 +125,8 @@ public:
 	//! If this is not toggled the GetData method will destroy the hash table as it is scanning it
 	static void SetMultiScan(GlobalSinkState &state);
 
+	void GetPlanProperties(vector<PlanProperty> &props) const override;
+
 private:
 	//! When we only have distinct aggregates, we can delay adding groups to the main ht
 	bool CanSkipRegularSink() const;

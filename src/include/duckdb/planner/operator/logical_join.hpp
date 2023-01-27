@@ -39,6 +39,7 @@ public:
 	vector<ColumnBinding> GetColumnBindings() override;
 	void Serialize(FieldWriter &writer) const override;
 	static void Deserialize(LogicalJoin &join, LogicalDeserializationState &state, FieldReader &reader);
+	void GetPlanProperties(vector<PlanProperty> &props) const override;
 
 protected:
 	void ResolveTypes() override;

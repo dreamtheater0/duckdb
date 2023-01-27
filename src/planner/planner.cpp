@@ -43,6 +43,11 @@ void Planner::CreatePlan(SQLStatement &statement) {
 		this->types = bound_statement.types;
 		this->plan = std::move(bound_statement.plan);
 
+		if (ClientConfig::GetConfig(context).enable_plan_visualizer) {
+			PlanVisualizer<LogicalOperator> plan_visualizer("logicalplan");
+			plan_visualizer.Visualize(*plan);
+		}
+
 		auto max_tree_depth = ClientConfig::GetConfig(context).max_expression_depth;
 		CheckTreeDepth(*plan, max_tree_depth);
 	} catch (const ParameterNotResolvedException &ex) {

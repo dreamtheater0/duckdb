@@ -37,6 +37,28 @@ vector<PhysicalOperator *> PhysicalDelimJoin::GetChildren() const {
 	return result;
 }
 
+vector<PlanChildOperatorInfo<PhysicalOperator>> PhysicalDelimJoin::GetChildOperatorInfo() const {
+	vector<PlanChildOperatorInfo<PhysicalOperator>> child_infos;
+	child_infos.reserve(children.size());
+
+	idx_t idx = 0;
+	for (auto &child : children) {
+		child_infos.emplace_back("Child[" + to_string(idx) + "]", child.get(), false);
+		idx++;
+	}
+
+	child_infos.emplace_back("Join", join.get(), true);
+	child_infos.emplace_back("Distinct", distinct.get(), false);
+
+	idx = 0;
+	for (auto &scan : delim_scans) {
+		child_infos.emplace_back("Scan[" + to_string(idx) + "]", scan, true);
+		idx++;
+	}
+
+	return child_infos;
+}
+
 //===--------------------------------------------------------------------===//
 // Sink
 //===--------------------------------------------------------------------===//

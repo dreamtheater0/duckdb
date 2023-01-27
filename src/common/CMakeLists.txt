@@ -38,6 +38,7 @@ add_library_unity(
   local_file_system.cpp
   preserved_error.cpp
   printer.cpp
+  plan_visualizer.cpp
   radix_partitioning.cpp
   re2_regex.cpp
   random_engine.cpp

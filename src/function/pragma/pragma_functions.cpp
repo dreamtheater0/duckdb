@@ -2,6 +2,7 @@
 
 #include "duckdb/common/enums/output_type.hpp"
 #include "duckdb/common/operator/cast_operators.hpp"
+#include "duckdb/main/client_config.hpp"
 #include "duckdb/main/client_context.hpp"
 #include "duckdb/main/database.hpp"
 #include "duckdb/main/query_profiler.hpp"
@@ -116,6 +117,14 @@ static void PragmaDisableOptimizer(ClientContext &context, const FunctionParamet
 	ClientConfig::GetConfig(context).enable_optimizer = false;
 }
 
+static void PragmaEnablePlanVisualizer(ClientContext &context, const FunctionParameters &parameters) {
+	ClientConfig::GetConfig(context).enable_plan_visualizer = true;
+}
+
+static void PragmaDisablePlanVisualizer(ClientContext &context, const FunctionParameters &parameters) {
+	ClientConfig::GetConfig(context).enable_plan_visualizer = false;
+}
+
 void PragmaFunctions::RegisterFunction(BuiltinFunctions &set) {
 	RegisterEnableProfiling(set);
 
@@ -152,6 +161,9 @@ void PragmaFunctions::RegisterFunction(BuiltinFunctions &set) {
 	set.AddFunction(PragmaFunction::PragmaStatement("enable_checkpoint_on_shutdown", PragmaEnableCheckpointOnShutdown));
 	set.AddFunction(
 	    PragmaFunction::PragmaStatement("disable_checkpoint_on_shutdown", PragmaDisableCheckpointOnShutdown));
+
+	set.AddFunction(PragmaFunction::PragmaStatement("enable_plan_visualizer", PragmaEnablePlanVisualizer));
+	set.AddFunction(PragmaFunction::PragmaStatement("disable_plan_visualizer", PragmaDisablePlanVisualizer));
 }
 
 } // namespace duckdb

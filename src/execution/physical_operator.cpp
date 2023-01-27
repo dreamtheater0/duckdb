@@ -307,4 +307,23 @@ OperatorFinalizeResultType CachingPhysicalOperator::FinalExecute(ExecutionContex
 	return OperatorFinalizeResultType::FINISHED;
 }
 
+void PhysicalOperator::GetPlanProperties(vector<PlanProperty> &props) const {
+	props.emplace_back("EstCard", std::to_string(estimated_props->GetCardinality<double>()));
+	props.emplace_back("Cost", std::to_string(estimated_props->GetCost()));
+	props.emplace_back("EstCard", to_string(estimated_cardinality));
+}
+
+vector<PlanChildOperatorInfo<PhysicalOperator>> PhysicalOperator::GetChildOperatorInfo() const {
+	vector<PlanChildOperatorInfo<PhysicalOperator>> child_infos;
+	child_infos.reserve(children.size());
+
+	idx_t idx = 0;
+	for (auto &child : children) {
+		child_infos.emplace_back("Child[" + to_string(idx) + "]", child.get(), false);
+		idx++;
+	}
+
+	return child_infos;
+}
+
 } // namespace duckdb

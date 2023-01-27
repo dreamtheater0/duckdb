@@ -1,4 +1,5 @@
 #include "duckdb/execution/operator/projection/physical_projection.hpp"
+#include "duckdb/execution/physical_operator.hpp"
 #include "duckdb/parallel/thread_context.hpp"
 #include "duckdb/execution/expression_executor.hpp"
 
@@ -41,6 +42,16 @@ string PhysicalProjection::ParamsToString() const {
 		extra_info += expr->GetName() + "\n";
 	}
 	return extra_info;
+}
+
+void PhysicalProjection::GetPlanProperties(vector<PlanProperty> &props) const {
+	idx_t idx = 0;
+	for (auto &expr : select_list) {
+		props.emplace_back("Expr[" + to_string(idx) + "] " + expr->alias + " " + expr->return_type.ToString(), expr->ToString());
+		idx++;
+	}
+
+	PhysicalOperator::GetPlanProperties(props);
 }
 
 } // namespace duckdb

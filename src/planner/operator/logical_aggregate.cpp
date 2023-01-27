@@ -1,6 +1,7 @@
 #include "duckdb/planner/operator/logical_aggregate.hpp"
 #include "duckdb/common/string_util.hpp"
 #include "duckdb/common/field_writer.hpp"
+#include "duckdb/planner/logical_operator.hpp"
 
 namespace duckdb {
 
@@ -115,6 +116,29 @@ vector<idx_t> LogicalAggregate::GetTableIndex() const {
 		result.push_back(groupings_index);
 	}
 	return result;
+}
+
+void LogicalAggregate::GetPlanProperties(vector<PlanProperty> &props) const {
+	props.emplace_back("GRP_IDX", to_string(group_index));
+	props.emplace_back("AGGR_IDX", to_string(aggregate_index));
+	props.emplace_back("GRPSET_IDX", to_string(groupings_index));
+
+	for (idx_t i = 0; i < groups.size(); i++) {
+		auto name = "GROUP[" + to_string(i) + "]";
+		auto value = groups[i]->ToString();
+
+		if (!groups[i]->alias.empty()) {
+			value += " alias:[" + groups[i]->alias + "]";
+		}
+		props.emplace_back(name, value);
+	}
+
+	//for (idx_t i = 0; i < expressions.size(); i++) {
+	//	auto name = "AGGR[" + to_string(i) + "]";
+	//	auto value = expressions[i]->GetName();
+	//	props.emplace_back(name, value);
+	//}
+	LogicalOperator::GetPlanProperties(props);
 }
 
 } // namespace duckdb

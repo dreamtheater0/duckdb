@@ -58,6 +58,11 @@ unique_ptr<PhysicalOperator> PhysicalPlanGenerator::CreatePlan(unique_ptr<Logica
 	auto plan = CreatePlan(*op);
 	profiler.EndPhase();
 
+	if (ClientConfig::GetConfig(context).enable_plan_visualizer) {
+		PlanVisualizer<PhysicalOperator> plan_visualizer("physicalplan");
+		plan_visualizer.Visualize(*plan);
+	}
+
 	plan->Verify();
 	return plan;
 }

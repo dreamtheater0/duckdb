@@ -1,5 +1,6 @@
 #include "duckdb/execution/operator/join/physical_comparison_join.hpp"
 #include "duckdb/common/types/chunk_collection.hpp"
+#include "duckdb/execution/physical_operator.hpp"
 
 namespace duckdb {
 
@@ -33,6 +34,19 @@ string PhysicalComparisonJoin::ParamsToString() const {
 	extra_info += StringUtil::Format("EC: %llu\n", estimated_props->GetCardinality<idx_t>());
 	extra_info += StringUtil::Format("Cost: %llu", (idx_t)estimated_props->GetCost());
 	return extra_info;
+}
+
+void PhysicalComparisonJoin::GetPlanProperties(vector<PlanProperty> &props) const {
+	props.emplace_back("JoinType", JoinTypeToString(join_type));
+
+	idx_t idx = 0;
+	for (auto &it : conditions) {
+		string op = ExpressionTypeToOperator(it.comparison);
+		props.emplace_back("JoinCondition[" + to_string(idx) + "]",
+		                   it.left->GetName() + " " + op + " " + it.right->GetName());
+	}
+
+	PhysicalOperator::GetPlanProperties(props);
 }
 
 void PhysicalComparisonJoin::ConstructEmptyJoinResult(JoinType join_type, bool has_null, DataChunk &input,

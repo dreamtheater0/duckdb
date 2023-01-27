@@ -12,6 +12,7 @@
 #include "duckdb/common/common.hpp"
 #include "duckdb/common/enums/operator_result_type.hpp"
 #include "duckdb/common/enums/physical_operator_type.hpp"
+#include "duckdb/common/plan_visualizer.hpp"
 #include "duckdb/common/types/data_chunk.hpp"
 #include "duckdb/execution/execution_context.hpp"
 #include "duckdb/optimizer/join_order/join_node.hpp"
@@ -224,6 +225,8 @@ public:
 	virtual bool AllOperatorsPreserveOrder() const;
 
 	virtual void BuildPipelines(Pipeline &current, MetaPipeline &meta_pipeline);
+	virtual void GetPlanProperties(vector<PlanProperty> &props) const;
+	virtual vector<PlanChildOperatorInfo<PhysicalOperator>> GetChildOperatorInfo() const;
 };
 
 //! Contains state for the CachingPhysicalOperator

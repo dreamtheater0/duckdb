@@ -92,6 +92,9 @@ struct ClientConfig {
 	//! Defaults to PhysicalMaterializedCollector
 	get_result_collector_t result_collector = nullptr;
 
+	//! Enable the plan visualizer
+	bool enable_plan_visualizer = false;
+
 public:
 	static ClientConfig &GetConfig(ClientContext &context);
 	static const ClientConfig &GetConfig(const ClientContext &context);

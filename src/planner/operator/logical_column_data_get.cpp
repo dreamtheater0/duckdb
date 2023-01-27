@@ -1,6 +1,7 @@
 #include "duckdb/planner/operator/logical_column_data_get.hpp"
 #include "duckdb/common/field_writer.hpp"
 #include "duckdb/common/types/data_chunk.hpp"
+#include <string>
 
 namespace duckdb {
 
@@ -40,6 +41,16 @@ unique_ptr<LogicalOperator> LogicalColumnDataGet::Deserialize(LogicalDeserializa
 
 vector<idx_t> LogicalColumnDataGet::GetTableIndex() const {
 	return vector<idx_t> {table_index};
+}
+
+void LogicalColumnDataGet::GetPlanProperties(vector<PlanProperty> &props) const {
+	props.emplace_back("TableIdx", to_string(table_index));
+
+	idx_t idx = 0;
+	for (auto &chunk_type : chunk_types) {
+		props.emplace_back("ChunkType[" + to_string(idx) + "]", chunk_type.ToString());
+		idx++;
+	}
 }
 
 } // namespace duckdb

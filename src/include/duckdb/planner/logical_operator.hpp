@@ -11,6 +11,7 @@
 #include "duckdb/catalog/catalog.hpp"
 #include "duckdb/common/common.hpp"
 #include "duckdb/common/enums/logical_operator_type.hpp"
+#include "duckdb/common/plan_visualizer.hpp"
 #include "duckdb/optimizer/join_order/estimated_properties.hpp"
 #include "duckdb/planner/column_binding.hpp"
 #include "duckdb/planner/expression.hpp"
@@ -85,6 +86,12 @@ public:
 
 	//! Returns the set of table indexes of this operator
 	virtual vector<idx_t> GetTableIndex() const;
+
+	//! Returns key-value pairs mostly for plan visualization
+	virtual void GetPlanProperties(vector<PlanProperty> &props) const;
+
+	//! Returns child operator
+	virtual vector<PlanChildOperatorInfo<LogicalOperator>> GetChildOperatorInfo() const;
 
 protected:
 	//! Resolve types for this specific operator

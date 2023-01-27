@@ -376,4 +376,25 @@ unique_ptr<LogicalOperator> LogicalOperator::Copy(ClientContext &context) const 
 	return op_copy;
 }
 
+void LogicalOperator::GetPlanProperties(vector<PlanProperty> &props) const {
+	for (idx_t i = 0; i < expressions.size(); i++) {
+		string name = "EXPR[" + to_string(i) + "] " + expressions[i]->alias + " " + expressions[i]->return_type.ToString();
+		string value = expressions[i]->ToString();
+		props.emplace_back(name, value);
+	}
+}
+
+vector<PlanChildOperatorInfo<LogicalOperator>> LogicalOperator::GetChildOperatorInfo() const {
+	vector<PlanChildOperatorInfo<LogicalOperator>> child_infos;
+	child_infos.reserve(children.size());
+
+	idx_t idx = 0;
+	for (auto &child : children) {
+		child_infos.emplace_back("Child[" + to_string(idx) + "]", child.get(), false);
+		idx++;
+	}
+
+	return child_infos;
+}
+
 } // namespace duckdb

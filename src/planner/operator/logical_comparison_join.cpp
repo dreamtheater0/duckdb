@@ -41,4 +41,16 @@ unique_ptr<LogicalOperator> LogicalComparisonJoin::Deserialize(LogicalDeserializ
 	return std::move(result);
 }
 
+void LogicalComparisonJoin::GetPlanProperties(vector<PlanProperty> &props) const {
+	idx_t idx = 0;
+	for (auto &it : conditions) {
+		string op = ExpressionTypeToOperator(it.comparison);
+		props.emplace_back("JoinCondition[" + to_string(idx) + "]",
+		                   it.left->GetName() + " " + op + " " + it.right->GetName());
+		idx++;
+	}
+
+	LogicalJoin::GetPlanProperties(props);
+}
+
 } // namespace duckdb

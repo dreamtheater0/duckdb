@@ -32,6 +32,7 @@ public:
 	static unique_ptr<LogicalOperator> Deserialize(LogicalDeserializationState &state, FieldReader &reader);
 	static void Deserialize(LogicalComparisonJoin &comparison_join, LogicalDeserializationState &state,
 	                        FieldReader &reader);
+	void GetPlanProperties(vector<PlanProperty> &props) const override;
 
 public:
 	static unique_ptr<LogicalOperator> CreateJoin(JoinType type, unique_ptr<LogicalOperator> left_child,

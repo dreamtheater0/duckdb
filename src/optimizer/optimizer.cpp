@@ -64,6 +64,11 @@ void Optimizer::RunOptimizer(OptimizerType type, const std::function<void()> &ca
 	if (plan) {
 		Verify(*plan);
 	}
+
+	if (ClientConfig::GetConfig(context).enable_plan_visualizer) {
+		PlanVisualizer<LogicalOperator> plan_visualizer("optimize_" + OptimizerTypeToString(type));
+		plan_visualizer.Visualize(*plan);
+	}
 }
 
 void Optimizer::Verify(LogicalOperator &op) {

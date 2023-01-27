@@ -27,6 +27,7 @@ public:
 
 public:
 	vector<PhysicalOperator *> GetChildren() const override;
+	vector<PlanChildOperatorInfo<PhysicalOperator>> GetChildOperatorInfo() const override;
 
 public:
 	unique_ptr<GlobalSinkState> GetGlobalSinkState(ClientContext &context) const override;

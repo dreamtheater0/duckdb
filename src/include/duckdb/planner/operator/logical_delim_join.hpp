@@ -24,6 +24,7 @@ public:
 public:
 	void Serialize(FieldWriter &writer) const override;
 	static unique_ptr<LogicalOperator> Deserialize(LogicalDeserializationState &state, FieldReader &reader);
+	void GetPlanProperties(vector<PlanProperty> &props) const override;
 };
 
 } // namespace duckdb

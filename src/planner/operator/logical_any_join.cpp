@@ -23,4 +23,7 @@ unique_ptr<LogicalOperator> LogicalAnyJoin::Deserialize(LogicalDeserializationSt
 	return std::move(result);
 }
 
+void LogicalAnyJoin::GetPlanProperties(vector<PlanProperty> &props) const {
+	props.emplace_back("JoinCondition", condition->ToString());
+}
 } // namespace duckdb

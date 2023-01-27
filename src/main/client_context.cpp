@@ -47,6 +47,7 @@
 #include "duckdb/transaction/meta_transaction.hpp"
 #include "duckdb/common/http_stats.hpp"
 #include "duckdb/main/attached_database.hpp"
+#include "duckdb/common/plan_visualizer.hpp"
 
 namespace duckdb {
 

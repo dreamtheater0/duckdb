@@ -1,5 +1,7 @@
 #include "duckdb/execution/executor.hpp"
 
+#include "duckdb/common/enums/physical_operator_type.hpp"
+#include "duckdb/common/pipeline_visualizer.hpp"
 #include "duckdb/execution/execution_context.hpp"
 #include "duckdb/execution/operator/helper/physical_result_collector.hpp"
 #include "duckdb/execution/operator/set/physical_recursive_cte.hpp"
@@ -326,6 +328,14 @@ void Executor::InitializeInternal(PhysicalOperator *plan) {
 
 		// collect all pipelines from the root pipelines (recursively) for the progress bar and verify them
 		root_pipeline->GetPipelines(pipelines, true);
+
+		// visualize the pipeline graph with the physical plan
+		if (ClientConfig::GetConfig(context).enable_plan_visualizer) {
+			PipelineVisualizer pipeline_visualizer("pipeline");
+			pipeline_visualizer.AddPlan(physical_plan);
+			pipeline_visualizer.AddPipeline(pipelines);
+			pipeline_visualizer.Visualize();
+		}
 
 		// finally, verify and schedule
 		VerifyPipelines();

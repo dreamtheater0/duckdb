@@ -22,4 +22,20 @@ vector<idx_t> LogicalCTERef::GetTableIndex() const {
 	return vector<idx_t> {table_index};
 }
 
+void LogicalCTERef::GetPlanProperties(vector<PlanProperty> &props) const {
+	props.emplace_back("TableIdx", to_string(table_index));
+	props.emplace_back("CTEIdx", to_string(cte_index));
+
+	idx_t idx = 0;
+	for (auto &chunk_type : chunk_types) {
+		props.emplace_back("ChunkType[" + to_string(idx) + "]", chunk_type.ToString());
+		idx++;
+	}
+
+	idx = 0;
+	for (auto &col : bound_columns) {
+		props.emplace_back("BoundCol[" + to_string(idx) + "]", col);
+		idx++;
+	}
+}
 } // namespace duckdb

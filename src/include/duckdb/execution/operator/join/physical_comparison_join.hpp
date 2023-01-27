@@ -25,6 +25,7 @@ public:
 
 public:
 	string ParamsToString() const override;
+	void GetPlanProperties(vector<PlanProperty> &props) const override;
 
 	//! Construct the join result of a join with an empty RHS
 	static void ConstructEmptyJoinResult(JoinType type, bool has_null, DataChunk &input, DataChunk &result);
